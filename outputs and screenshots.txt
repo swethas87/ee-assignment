@@ -1,0 +1,104 @@
+ 
+ 
+$ kubectl create deployment hello-world-dep --image=helloworld_1:0.1
+deployment.apps/hello-world-dep created
+
+niksa@DESKTOP-0VEF8N2 MINGW64 ~/OneDrive/Desktop/DevOps Projects/ee-assignment
+$ kubectl expose deployment hello-world-dep --type=LoadBalancer --port=3000
+service/hello-world-dep exposed
+
+niksa@DESKTOP-0VEF8N2 MINGW64 ~/OneDrive/Desktop/DevOps Projects/ee-assignment
+$ kubectl get pods
+NAME                               READY   STATUS             RESTARTS   AGE
+hello-world-dep-555db89f8f-msvpd   0/1     CrashLoopBackOff   6          6m36s
+
+niksa@DESKTOP-0VEF8N2 MINGW64 ~/OneDrive/Desktop/DevOps Projects/ee-assignment
+$ kubectl describe pod hello-world-dep-555db89f8f-msvpd
+Name:         hello-world-dep-555db89f8f-msvpd
+Namespace:    default
+Priority:     0
+Node:         minikube/192.168.99.103
+Start Time:   Sun, 27 Jun 2021 23:15:22 +0100
+Labels:       app=hello-world-dep
+              pod-template-hash=555db89f8f
+Annotations:  <none>
+Status:       Running
+IP:           172.17.0.4
+IPs:
+  IP:           172.17.0.4
+Controlled By:  ReplicaSet/hello-world-dep-555db89f8f
+Containers:
+  helloworld-1-pg4hq:
+    Container ID:   docker://07ea1ef5d467f3d7c8832a3dec1b16687e4e5130f28f3252f8270798559cc2e4
+    Image:          helloworld_1:0.1
+    Image ID:       docker://sha256:39741a8466be3fd7597b620e43d4a848607b197cbd49f58ee401c1f377858ca6
+    Port:           <none>
+    Host Port:      <none>
+    State:          Waiting
+      Reason:       CrashLoopBackOff
+    Last State:     Terminated
+      Reason:       Completed
+      Exit Code:    0
+      Started:      Sun, 27 Jun 2021 23:21:05 +0100
+      Finished:     Sun, 27 Jun 2021 23:21:05 +0100
+    Ready:          False
+    Restart Count:  6
+    Environment:    <none>
+    Mounts:
+      /var/run/secrets/kubernetes.io/serviceaccount from default-token-2fgxh (ro)
+Conditions:
+  Type              Status
+  Initialized       True
+  Ready             False
+  ContainersReady   False
+  PodScheduled      True
+Volumes:
+  default-token-2fgxh:
+    Type:        Secret (a volume populated by a Secret)
+    SecretName:  default-token-2fgxh
+    Optional:    false
+QoS Class:       BestEffort
+Node-Selectors:  <none>
+Tolerations:     node.kubernetes.io/not-ready:NoExecute op=Exists for 300s
+                 node.kubernetes.io/unreachable:NoExecute op=Exists for 300s
+Events:
+  Type     Reason     Age                   From               Message
+  ----     ------     ----                  ----               -------
+  Normal   Scheduled  7m10s                 default-scheduler  Successfully assigned default/hello-world-dep-555db89f8f-msvpd to minikube
+  Normal   Pulled     5m41s (x5 over 7m8s)  kubelet            Container image "helloworld_1:0.1" already present on machine
+  Normal   Created    5m41s (x5 over 7m8s)  kubelet            Created container helloworld-1-pg4hq
+  Normal   Started    5m41s (x5 over 7m7s)  kubelet            Started container helloworld-1-pg4hq
+  Warning  BackOff    113s (x23 over 7m5s)  kubelet            Back-off restarting failed container
+
+niksa@DESKTOP-0VEF8N2 MINGW64 ~/OneDrive/Desktop/DevOps Projects/ee-assignment
+$ kubectl describe service hello-world-dep-555db89f8f-msvpd
+Error from server (NotFound): services "hello-world-dep-555db89f8f-msvpd" not found
+
+niksa@DESKTOP-0VEF8N2 MINGW64 ~/OneDrive/Desktop/DevOps Projects/ee-assignment
+$ kubectl get services
+NAME              TYPE           CLUSTER-IP     EXTERNAL-IP    PORT(S)          AGE
+hello-world-dep   LoadBalancer   10.97.90.222   10.97.90.222   3000:31831/TCP   8m15s
+kubernetes        ClusterIP      10.96.0.1      <none>         443/TCP          15m
+
+niksa@DESKTOP-0VEF8N2 MINGW64 ~/OneDrive/Desktop/DevOps Projects/ee-assignment
+$ kubectl describe service hello-world-dep
+Name:                     hello-world-dep
+Namespace:                default
+Labels:                   app=hello-world-dep
+Annotations:              <none>
+Selector:                 app=hello-world-dep
+Type:                     LoadBalancer
+IP Families:              <none>
+IP:                       10.97.90.222
+IPs:                      10.97.90.222
+LoadBalancer Ingress:     10.97.90.222
+Port:                     <unset>  3000/TCP
+TargetPort:               3000/TCP
+NodePort:                 <unset>  31831/TCP
+Endpoints:
+Session Affinity:         None
+External Traffic Policy:  Cluster
+Events:                   <none>
+
+kubectl run hello-node --image=helloworld_1:0.1 --port=8080 --image-pull-policy=Never
+
